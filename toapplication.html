@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to do application</title>
+    <link rel="stylesheet" href="../../bslibrary/bootstrap-5.3.8-dist/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <style>
+        body {
+    background-color: #4a4949;
+}
+
+h2 {
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.form-control {
+    height: 50px;
+    border-radius: 8px;
+    border: 2px solid #fbfcfb;
+    background-color: #f1f1f1;
+    color: #030303;
+}
+
+.form-control:focus {
+    background-color: #f1f1f1;
+    color: #000000;
+    border-color:#4eb9dd;
+    box-shadow: 0 0 7px #4eb9dd;
+}
+
+.btn {
+    height: 50px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn-sm {
+    height: 32px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+#container > div {
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #2d2d2d;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#container > div:hover {
+    transform: scale(1.02);
+    background-color: #353535;
+}
+
+.text-white {
+    font-size: 18px;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Add Spacing for Mobile */
+@media(max-width: 576px) {
+    .btn {
+        font-size: 14px;
+    }
+}
+
+    </style>
+</head>
+<body  class="bg-dark row justify-content-center">
+    <div class="container mt-3 row justify-content-center col-md-6 col-sm-10 col-12 ">
+        <h2 CLASS="text-white text-center">TO DO APPLICATION</h2>
+        <div class="input-group">
+        <input type="text" placeholder="ENTER YOUR TASKS" id="input" class="form-control mt-3 mb-3"> 
+        <button id="addtasks" class="btn btn-primary btn-lg mt-3">ADD</button>
+        <button class="btn btn-danger mt-3 ms-1" onclick="clearAll()">CLEAR ALL</button>
+
+        </div> 
+        <div id="container" class="list-group container mt-2 row justify-content-center col-md-6 col-sm-10 col-12 " >
+            </div>
+         
+        <script>
+            let tasklist = JSON.parse(localStorage.getItem("tasks")) || [];
+            let edtingid=null
+          inputele=document.getElementById("input")
+          addtasksele=document.getElementById("addtasks")
+          let containerele=document.getElementById("container")
+
+          addtasksele.addEventListener("click", ()=>{
+            text=inputele.value
+            if (text === "")
+            {
+                alert(" ⚠️PLEASE ENTER TASK")
+                return
+            }
+            if(edtingid!==null)
+          {
+            tasklist.forEach(element=>{
+                if(element.id==edtingid)
+                element.content=text
+              
+            })
+            edtingid=null
+            addtasksele.innerText="add"
+              inputele.value=""
+              saveData()
+                display()
+          }
+          else
+          {
+            let obiject={
+                id:Math.trunc(Math.random()*100000),
+                content:text,
+            }
+            tasklist.push(obiject)
+            inputele.value=""
+            saveData()
+            display ()
+        }
+              })
+              
+            function display() {
+    let str = "";
+    tasklist.forEach(element => {
+        str += `<div class="d-flex justify-content-between align-items-center mt-2 border p-2 rounded">
+                    <span class="text-white">${element.content}</span>
+                    <div>
+                        <button class="btn btn-warning btn-sm m-2" onclick="editcontent(${element.id})">EDIT</button>
+                        <button class="btn btn-danger btn-sm m-2" onclick="deleteitem(${element.id})">DELETE</button>
+                    </div>
+                </div>`;
+    });
+    containerele.innerHTML = str;
+}
+
+
+            function deleteitem(id)
+            {
+                tasklist=tasklist.filter(element=>(element.id!==id))
+                saveData()
+                display()
+            }
+            function editcontent(id){
+                let elementtoedit=tasklist.find(element=>element.id==id)
+                inputele.value=elementtoedit.content
+                addtasksele.innerText="UPDATE"
+                edtingid=id
+
+            }
+            function saveData() {
+               localStorage.setItem("tasks", JSON.stringify(tasklist));
+             }
+            function clearAll() {
+        localStorage.removeItem("tasks");
+        tasklist = [];
+        display();
+    }
+
+
+            display();
+        </script>
+ 
+</body>
+</html>
